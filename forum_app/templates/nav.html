@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+
+    <meta property="og:title" content="Social Nav Prototype" />
+    <meta property="og:description" content="A modern, responsive social media style navigation menu" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://replit.com/public/images/opengraph.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@replit" />
+    <meta name="twitter:title" content="Social Nav Prototype" />
+    <meta name="twitter:description" content="A modern, responsive social media style navigation menu" />
+    <meta name="twitter:image" content="https://replit.com/public/images/opengraph.png" />
+
+    <title>Social Nav Prototype</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+      :root {
+        --primary: #6366f1;
+        --primary-hover: #4f46e5;
+        --bg-body: #f9fafb;
+        --bg-white: #060818;
+        --text-main: #c5c9d1;
+        --text-muted: #6b7280;
+        --border-color: #e5e7eb;
+        --search-bg: #f3f4f6;
+        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        --radius: 0.5rem;
+        --header-height: 64px;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      a{
+        color:#ffff;
+        text-decoration: none;
+      }
+
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: var(--bg-body);
+        color: var(--text-main);
+        min-height: 100vh;
+        padding-top: var(--header-height); /* Prevent content from being hidden behind fixed header */
+      }
+
+      /* Navigation Bar */
+      .navbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: var(--header-height);
+        background-color: var(--bg-white);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 1.5rem;
+        z-index: 1000;
+        box-shadow: var(--shadow-sm);
+      }
+
+      /* Left: Logo */
+      .nav-left {
+        display: flex;
+        align-items: center;
+        min-width: 120px;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+        color: var(--primary);
+        font-weight: 700;
+        font-size: 1.25rem;
+        letter-spacing: -0.025em;
+        transition: opacity 0.2s;
+      }
+
+      .logo:hover {
+        opacity: 0.8;
+      }
+
+      .logo-icon {
+        width: 28px;
+        height: 28px;
+        background: var(--primary);
+        border-radius: 6px;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* Center: Search */
+      .nav-center {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        max-width: 600px;
+        padding: 0 1rem;
+      }
+
+      .search-container {
+        position: relative;
+        width: 100%;
+        max-width: 480px;
+        transition: transform 0.2s;
+      }
+
+      .search-icon {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-muted);
+        pointer-events: none;
+      }
+
+      .search-input {
+        width: 100%;
+        background-color: var(--search-bg);
+        border: 1px solid transparent;
+        border-radius: 9999px;
+        padding: 10px 16px 10px 40px;
+        font-size: 0.95rem;
+        color: var(--text-main);
+        outline: none;
+        transition: all 0.2s ease;
+      }
+
+      .search-input:focus {
+        background-color: var(--bg-white);
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+      }
+
+      /* Right: Actions */
+      .nav-right {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        min-width: 120px;
+        justify-content: flex-end;
+      }
+
+      .create-btn {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        background-color: var(--primary);
+        color: white;
+        text-decoration: none;
+        padding: 0.5rem 1rem;
+        border-radius: var(--radius);
+        font-weight: 500;
+        font-size: 0.9rem;
+        transition: all 0.2s;
+        border: none;
+        cursor: pointer;
+      }
+
+      .create-btn:hover {
+        background-color: var(--primary-hover);
+        transform: translateY(-1px);
+      }
+
+      .create-btn:active {
+        transform: translateY(0);
+      }
+
+      /* Profile Dropdown */
+      .profile-container {
+        position: relative;
+      }
+
+      .avatar-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 2px;
+        border-radius: 50%;
+        border: 2px solid transparent;
+        transition: border-color 0.2s;
+      }
+
+      .avatar-btn:hover, .avatar-btn.active {
+        border-color: var(--border-color);
+      }
+
+      .avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        display: block;
+      }
+
+      .dropdown-menu {
+        position: absolute;
+        top: calc(100% + 8px);
+        right: 0;
+        width: 220px;
+        background-color: var(--bg-white);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow-lg);
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-10px);
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        display: flex;
+        flex-direction: column;
+        padding: 0.5rem;
+        z-index: 1001;
+      }
+
+      .dropdown-menu.show {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+      }
+
+      .dropdown-header {
+        padding: 0.5rem 0.75rem;
+        margin-bottom: 0.25rem;
+        border-bottom: 1px solid var(--border-color);
+      }
+
+      .user-name {
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: var(--text-main);
+      }
+
+      .user-handle {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+      }
+
+      .dropdown-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.6rem 0.75rem;
+        color: var(--text-main);
+        text-decoration: none;
+        font-size: 0.9rem;
+        border-radius: 4px;
+        transition: background-color 0.2s;
+        cursor: pointer;
+      }
+
+      .dropdown-item:hover {
+        background-color: var(--search-bg);
+      }
+
+      .dropdown-item.danger {
+        color: #ef4444;
+      }
+
+      .dropdown-item.danger:hover {
+        background-color: #fef2f2;
+      }
+
+      /* Responsive Adjustments */
+      @media (max-width: 768px) {
+        .navbar {
+          padding: 0 1rem;
+        }
+
+        .search-input {
+          padding-left: 36px;
+        }
+        
+        .create-btn span {
+          display: none;
+        }
+        
+        .create-btn {
+          padding: 0.5rem;
+          border-radius: 50%;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .logo span {
+          display: none;
+        }
+
+        .nav-center {
+          padding: 0 0.5rem;
+        }
+      }
+
+      /* Icons */
+      .icon {
+        width: 20px;
+        height: 20px;
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        fill: none;
+      }
+
+    </style>
+  </head>
+  <body>
+    
+    <nav class="navbar">
+      <!-- Left: Logo -->
+      <div class="nav-left">
+        <a href="/" class="logo">
+          <div class="logo-icon">
+            <svg class="icon" viewBox="0 0 24 24" style="width: 16px; height: 16px;">
+              <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+            </svg>
+          </div>
+          <span>SocialPro</span>
+        </a>
+      </div>
+
+      <!-- Center: Search -->
+      <div class="nav-center">
+        <div class="search-container">
+          <svg class="icon search-icon" viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input type="text" class="search-input" placeholder="Search for people, posts, or tags...">
+        </div>
+      </div>
+
+      <!-- Right: Actions -->
+      <div class="nav-right">
+        <button class="create-btn" title="Create New Post">
+         <a href="{% url 'create_post' %}"><span>Create</span></a>
+        </button>
+
+        <div class="profile-container">
+          <button class="avatar-btn" id="avatarBtn" aria-expanded="false" aria-haspopup="true">
+            <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80" alt="User Avatar" class="avatar">
+          </button>
+
+          <!-- Dropdown Menu -->
+          <div class="dropdown-menu" id="dropdownMenu">
+            <div class="dropdown-header">
+              <div class="user-name">Jane Doe</div>
+              <div class="user-handle">@janedoe</div>
+            </div>
+            
+            <a href="#profile" class="dropdown-item">
+              <svg class="icon" viewBox="0 0 24 24">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+              Profile
+            </a>
+            
+            <a href="#settings" class="dropdown-item">
+              <svg class="icon" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+              </svg>
+              Settings
+            </a>
+            
+            <div style="height: 1px; background: var(--border-color); margin: 0.25rem 0;"></div>
+            
+            <a href="#logout" class="dropdown-item danger">
+              <svg class="icon" viewBox="0 0 24 24">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                <polyline points="16 17 21 12 16 7"></polyline>
+                <line x1="21" y1="12" x2="9" y2="12"></line>
+              </svg>
+              Logout
+            </a>
+          </div>
+        </div>
+      </div>
+    </nav>
+ 
+
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const avatarBtn = document.getElementById('avatarBtn');
+        const dropdownMenu = document.getElementById('dropdownMenu');
+        
+        // Toggle Dropdown
+        avatarBtn.addEventListener('click', (e) => {
+          e.stopPropagation(); // Prevent click from bubbling to document
+          const isExpanded = avatarBtn.getAttribute('aria-expanded') === 'true';
+          
+          if (isExpanded) {
+            closeDropdown();
+          } else {
+            openDropdown();
+          }
+        });
+        
+        // Close Dropdown on Outside Click
+        document.addEventListener('click', (e) => {
+          if (!dropdownMenu.contains(e.target) && !avatarBtn.contains(e.target)) {
+            closeDropdown();
+          }
+        });
+
+        // Close on Escape Key
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') {
+            closeDropdown();
+          }
+        });
+
+        function openDropdown() {
+          dropdownMenu.classList.add('show');
+          avatarBtn.setAttribute('aria-expanded', 'true');
+          avatarBtn.classList.add('active');
+        }
+
+        function closeDropdown() {
+          dropdownMenu.classList.remove('show');
+          avatarBtn.setAttribute('aria-expanded', 'false');
+          avatarBtn.classList.remove('active');
+        }
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aura - Immersive Feed</title>
+    <meta property="og:title" content="Aura | Immersive Feed" />
+    <meta property="og:description" content="A high-end, interactive social feed with immersive scroll animations." />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://replit.com/public/images/opengraph.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@replit" />
+    <meta name="twitter:title" content="Aura | Immersive Feed" />
+    <meta name="twitter:description" content="A high-end, interactive social feed with immersive scroll animations." />
+    <meta name="twitter:image" content="https://replit.com/public/images/opengraph.png" />
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: #0a0a0a;
+            color: #fafafa;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* ===== HERO SECTION ===== */
+        .hero {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: 10;
+            overflow: hidden;
+        }
+
+        .hero-bg {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, #1a0033 0%, #0d0a1f 25%, #001a4d 50%, #0a0a2e 100%);
+            filter: blur(2px);
+        }
+
+        .hero-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(2px);
+        }
+
+        .hero-content {
+            position: relative;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            text-align: center;
+            will-change: transform, opacity, filter;
+            transform-origin: center;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            padding: 0.375rem 1rem;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            border-radius: 2rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: #fafafa;
+            animation: fadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards;
+            opacity: 0;
+        }
+
+        .hero-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(3rem, 10vw, 7rem);
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 2rem;
+            line-height: 1.1;
+            animation: fadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards;
+            opacity: 0;
+            text-shadow: 0 0 40px rgba(124, 58, 237, 0.5);
+        }
+
+        .hero-title-gradient {
+            background: linear-gradient(to right, #ffffff, rgba(255, 255, 255, 0.6));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: clamp(1rem, 2vw, 1.375rem);
+            color: rgba(255, 255, 255, 0.7);
+            max-width: 32rem;
+            margin: 0 auto 3rem;
+            font-weight: 300;
+            line-height: 1.8;
+            animation: fadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;
+            opacity: 0;
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: fadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1) 0.8s forwards;
+            opacity: 0;
+        }
+
+        .scroll-arrow {
+            width: 1.5rem;
+            height: 2.5rem;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.25rem;
+        }
+
+        .scroll-dot {
+            width: 0.25rem;
+            height: 0.5rem;
+            background: white;
+            border-radius: 0.125rem;
+            animation: scrollBounce 2s infinite;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes scrollBounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(0.5rem);
+            }
+            60% {
+                transform: translateY(0.25rem);
+            }
+        }
+
+        /* ===== FEED SECTION ===== */
+        .feed-spacer {
+            height: 100vh;
+            pointer-events: none;
+        }
+
+        .feed-container {
+            position: relative;
+            z-index: 20;
+            margin-top: -100px;
+            max-width: 42rem;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 1rem;
+        }
+
+        .feed-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            position: sticky;
+            top: 1rem;
+            z-index: 30;
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(20px);
+            padding: 1rem;
+            border-radius: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+        }
+
+        .feed-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .feed-filters {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            background: rgba(255, 255, 255, 0.05);
+            border: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #fafafa;
+        }
+
+        .filter-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .filter-btn.active {
+            background: rgba(124, 58, 237, 0.2);
+            color: #d8b4fe;
+        }
+
+        .posts {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        /* ===== POST CARD ===== */
+        .post-card {
+            background: rgba(17, 17, 21, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 1.875rem;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        @media (min-width: 768px) {
+            .post-card {
+                padding: 2rem;
+            }
+        }
+
+        .post-card:hover {
+            border-color: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px -12px rgba(124, 58, 237, 0.1);
+            transform: translateY(-0.25rem);
+        }
+
+        .post-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .post-author {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex: 1;
+        }
+
+        .post-avatar {
+            position: relative;
+            width: 3rem;
+            height: 3rem;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            flex-shrink: 0;
+        }
+
+        .post-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .post-avatar-status {
+            position: absolute;
+            bottom: -0.25rem;
+            right: -0.25rem;
+            width: 1rem;
+            height: 1rem;
+            background-color: #22c55e;
+            border: 2px solid #0a0a0a;
+            border-radius: 50%;
+        }
+
+        .post-author-info {
+            flex: 1;
+        }
+
+        .post-username {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #fafafa;
+            margin-bottom: 0.25rem;
+            line-height: 1;
+        }
+
+        .post-meta {
+            font-size: 0.875rem;
+            color: #9ca3af;
+            font-weight: 500;
+        }
+
+        .post-menu-btn {
+            padding: 0.5rem;
+            background: transparent;
+            border: none;
+            color: #9ca3af;
+            cursor: pointer;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .post-menu-btn:hover {
+            color: #fafafa;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .post-content {
+            margin-bottom: 1.5rem;
+        }
+
+        .post-text {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.6;
+            white-space: pre-line;
+            margin-bottom: 1rem;
+        }
+
+        .post-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .post-tag {
+            color: #d8b4fe;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .post-tag:hover {
+            color: #e9d5ff;
+        }
+
+        .post-image {
+            width: 100%;
+            border-radius: 1.5rem;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            margin-top: 1rem;
+        }
+
+        .post-image img {
+            width: 100%;
+            height: auto;
+            display: block;
+            transition: transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .post-card:hover .post-image img {
+            transform: scale(1.05);
+        }
+
+        .post-actions {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .post-action-group {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .post-action {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            color: #9ca3af;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border-radius: 0.5rem;
+        }
+
+        .post-action:hover {
+            color: #fafafa;
+        }
+
+        .post-action.like.active {
+            color: #ec4899;
+        }
+
+        .post-action.like:hover {
+            color: #ec4899;
+            background: rgba(236, 72, 153, 0.1);
+        }
+
+        .post-action.comment:hover {
+            color: #60a5fa;
+            background: rgba(96, 165, 250, 0.1);
+        }
+
+        .post-action.share:hover {
+            color: #4ade80;
+            background: rgba(74, 222, 128, 0.1);
+        }
+
+        .post-action-icon {
+            width: 1.25rem;
+            height: 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .post-save-btn {
+            padding: 0.5rem;
+            background: transparent;
+            border: none;
+            color: #9ca3af;
+            cursor: pointer;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .post-save-btn:hover {
+            color: #fbbf24;
+            background: rgba(251, 191, 36, 0.1);
+        }
+
+        .post-save-btn.active {
+            color: #fbbf24;
+            background: rgba(251, 191, 36, 0.1);
+        }
+
+        .feed-end {
+            text-align: center;
+            color: #9ca3af;
+            padding: 3rem 1rem;
+            margin-bottom: 3rem;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1rem;
+            }
+
+            .feed-header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .post-card {
+                border-radius: 1.25rem;
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    {% include 'nav.html' %}
+    <!-- HERO SECTION -->
+    <div class="hero" id="hero">
+        <div class="hero-bg"></div>
+        <div class="hero-overlay"></div>
+        <div class="hero-content" id="heroContent">
+            <div class="hero-badge">The Future of Connection</div>
+            <h1 class="hero-title">
+                Experience <br>
+                <span class="hero-title-gradient">Digital Depth</span>
+            </h1>
+            <p class="hero-subtitle">
+                A reimagined social layer where content breathes and interactions feel real. Scroll to explore the feed.
+            </p>
+            <div class="scroll-indicator">
+                <div class="scroll-arrow">
+                    <div class="scroll-dot"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FEED SPACER -->
+    <div class="feed-spacer"></div>
+
+    <!-- FEED SECTION -->
+    <div class="feed-container" id="feedContainer">
+        <div class="feed-header">
+            <h2 class="feed-title">Latest Posts</h2>
+            <div class="feed-filters">
+                <button class="filter-btn" data-filter="trending">Trending</button>
+                <button class="filter-btn active" data-filter="foryou">For You</button>
+            </div>
+        </div>
+
+        <div class="posts" id="postsContainer">
+            <!-- Posts will be generated here -->
+        </div>
+
+        <div class="feed-end">
+            <p>You've reached the end of the void.</p>
+        </div>
+    </div>
+
+    <script>
+        // SVG Icons as inline HTML
+        const icons = {
+            heart: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>',
+            message: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>',
+            share: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>',
+            bookmark: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>',
+            moreHorizontal: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>'
+        };
+
+        // Mock posts data
+        const mockPosts = [
+            {
+                id: 1,
+                username: "Elena Fisher",
+                handle: "elena_design",
+                avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop",
+                content: "Just finished working on the new design system for Aura. We focused heavily on depth and lighting to create an immersive experience. 🌌\n\nWhat do you think about dark mode interfaces?",
+                image: null,
+                likes: 1240,
+                comments: 86,
+                tags: ["uiux", "design", "darkmode", "interface"],
+                time: "2h ago"
+            },
+            {
+                id: 2,
+                username: "Marcus Chen",
+                handle: "marcus_dev",
+                avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop",
+                image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800&fit=crop",
+                content: "The intersection of art and technology is where the magic happens. Exploring generative art with WebGL today. The possibilities are endless when code becomes your canvas.",
+                likes: 3502,
+                comments: 142,
+                tags: ["webgl", "creativecoding", "art", "tech"],
+                time: "5h ago"
+            },
+            {
+                id: 3,
+                username: "Sarah James",
+                handle: "sarah_j",
+                avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop",
+                image: null,
+                content: "Minimalism isn't about having less. It's about making room for what matters more. 🌱",
+                likes: 892,
+                comments: 45,
+                tags: ["mindset", "minimalism", "lifestyle"],
+                time: "8h ago"
+            },
+            {
+                id: 4,
+                username: "Alex Rivera",
+                handle: "arivera",
+                avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop",
+                image: null,
+                content: "Deploying to production on a Friday. Living dangerously? Maybe. Confident in my tests? Absolutely. 🚀",
+                likes: 2105,
+                comments: 320,
+                tags: ["developer", "coding", "friday"],
+                time: "12h ago"
+            }
+        ];
+
+        // Create post card HTML
+        function createPostCard(post) {
+            const tagsHtml = post.tags.map(tag => `<span class="post-tag">#${tag}</span>`).join('');
+            const imageHtml = post.image ? `<div class="post-image"><img src="${post.image}" alt="Post image"></div>` : '';
+            
+            return `
+                <div class="post-card" data-testid="post-card-${post.id}">
+                    <div class="post-header">
+                        <div class="post-author">
+                            <div class="post-avatar">
+                                <img src="${post.avatar}" alt="${post.username}">
+                                <div class="post-avatar-status"></div>
+                            </div>
+                            <div class="post-author-info">
+                                <div class="post-username">${post.username}</div>
+                                <div class="post-meta">@${post.handle} · ${post.time}</div>
+                            </div>
+                        </div>
+                        <button class="post-menu-btn" data-testid="button-menu-${post.id}">
+                            <div class="post-action-icon">${icons.moreHorizontal}</div>
+                        </button>
+                    </div>
+                    
+                    <div class="post-content">
+                        <p class="post-text">${post.content}</p>
+                        <div class="post-tags">${tagsHtml}</div>
+                        ${imageHtml}
+                    </div>
+                    
+                    <div class="post-actions">
+                        <div class="post-action-group">
+                            <button class="post-action like" data-testid="button-like-${post.id}" data-post-id="${post.id}">
+                                <div class="post-action-icon">${icons.heart}</div>
+                                <span data-testid="text-likes-${post.id}">${post.likes}</span>
+                            </button>
+                            <button class="post-action comment" data-testid="button-comment-${post.id}">
+                                <div class="post-action-icon">${icons.message}</div>
+                                <span>${post.comments}</span>
+                            </button>
+                            <button class="post-action share" data-testid="button-share-${post.id}">
+                                <div class="post-action-icon">${icons.share}</div>
+                            </button>
+                        </div>
+                        <button class="post-save-btn" data-testid="button-save-${post.id}">
+                            <div class="post-action-icon">${icons.bookmark}</div>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Initialize posts
+        function initPosts() {
+            const postsContainer = document.getElementById('postsContainer');
+            mockPosts.forEach((post, index) => {
+                postsContainer.innerHTML += createPostCard(post);
+            });
+
+            // Attach event listeners
+            mockPosts.forEach(post => {
+                const likeBtn = document.querySelector(`[data-testid="button-like-${post.id}"]`);
+                const saveBtn = document.querySelector(`[data-testid="button-save-${post.id}"]`);
+
+                likeBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const liked = likeBtn.classList.toggle('active');
+                    const likesSpan = document.querySelector(`[data-testid="text-likes-${post.id}"]`);
+                    let count = parseInt(likesSpan.textContent);
+                    likesSpan.textContent = liked ? count + 1 : count - 1;
+                });
+
+                saveBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    saveBtn.classList.toggle('active');
+                });
+            });
+        }
+
+        // Scroll-linked animations for hero
+        function setupHeroAnimations() {
+            const hero = document.getElementById('hero');
+            const heroContent = document.getElementById('heroContent');
+            const windowHeight = window.innerHeight;
+
+            window.addEventListener('scroll', () => {
+                const scrollY = window.scrollY;
+                const progress = Math.min(scrollY / windowHeight, 1);
+
+                // Calculate transforms
+                const translateY = scrollY * 0.5;
+                const opacity = Math.max(1 - progress * 1.5, 0);
+                const scale = Math.max(1 - progress * 0.2, 0.8);
+                const blur = progress * 20;
+
+                // Apply transforms
+                heroContent.style.transform = `translate3d(0, ${translateY}px, 0) scale(${scale})`;
+                heroContent.style.opacity = opacity;
+                heroContent.style.filter = `blur(${blur}px)`;
+            }, { passive: true });
+        }
+
+        // Filter functionality
+        function setupFilters() {
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    // In a real app, this would filter posts
+                });
+            });
+        }
+
+        // Initialize everything
+        document.addEventListener('DOMContentLoaded', () => {
+            initPosts();
+            setupHeroAnimations();
+            setupFilters();
+        });
+    </script>
+</body>
+</html>
